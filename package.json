@@ -18,8 +18,10 @@
   },
   "homepage": "https://github.com/jarryingnut/verifiedOrderbook#readme",
   "dependencies": {
+    "@balancer-labs/v2-solidity-utils": "^3.0.2",
     "@nomiclabs/hardhat-ethers": "^2.2.2",
     "@nomiclabs/hardhat-waffle": "^2.0.5",
+    "@openzeppelin/contracts": "^4.8.2",
     "chai": "^4.3.7",
     "dotenv": "^16.0.3",
     "ethereum-waffle": "^4.0.10",
