@@ -2,12 +2,14 @@
 pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
-// import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-// import "@openzeppelin/contracts/utils/math/Math.sol";
-import "@balancer-labs/v2-solidity-utils/contracts/math/Math.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
+//import "@balancer-labs/v2-solidity-utils/contracts/math/Math.sol";
 import "hardhat/console.sol";
 
 contract Heap {
+    using SafeMath for uint256;
+
     uint[] public _orderbook = [30, 20, 15, 8, 10, 3, 4];
 
     // Inserts adds in a value to our heap.
@@ -17,22 +19,20 @@ contract Heap {
         _orderbook.push(_value);
 
         // Start at the end of the array
-        uint256 currentIndex = Math.sub(_orderbook.length, 1);
+        //uint256 currentIndex = Math.sub(_orderbook.length, 1, false);
+        uint256 currentIndex = _orderbook.length.sub(1);
         // Bubble up the value until it reaches it's correct place (i.e. it is smaller than it's parent)
         while (
             currentIndex > 0 &&
-            _orderbook[Math.div(currentIndex, 2, false)] <
-            _orderbook[currentIndex]
+            _orderbook[currentIndex.div(2)] < _orderbook[currentIndex]
         ) {
             // If the parent value is lower than our current value, we swap them
-            uint temp = _orderbook[Math.div(currentIndex, 2, false)];
-            _orderbook[Math.div(currentIndex, 2, false)] = _orderbook[
-                currentIndex
-            ];
+            uint temp = _orderbook[currentIndex.div(2)];
+            _orderbook[currentIndex.div(2)] = _orderbook[currentIndex];
             _orderbook[currentIndex] = temp;
 
             // change our current Index to go up to the parent
-            currentIndex = Math.div(currentIndex, 2, false);
+            currentIndex = currentIndex.div(2);
         }
     }
 
@@ -46,7 +46,7 @@ contract Heap {
         uint256 toReturn = _orderbook[0];
 
         // Takes the last element of the array and put it at the root
-        _orderbook[0] = _orderbook[Math.sub(_orderbook.length, 1)];
+        _orderbook[0] = _orderbook[_orderbook.length.sub(1)];
 
         // Delete the last element from the array
         _orderbook.pop();
@@ -65,11 +65,11 @@ contract Heap {
         // Ensure the heap exists
         require(_orderbook.length > 0, "Orderbook is not initialized");
         //set the order which is deleted equal to the last element
-        _orderbook[_index] = _orderbook[Math.sub(_orderbook.length, 1)];
+        _orderbook[_index] = _orderbook[_orderbook.length.sub(1)];
         //delete the last element from array
         _orderbook.pop();
-        // Bubble down from root
-        bubbleDown(0);
+        // Bubble down from _index
+        bubbleDown(_index);
     }
 
     // This function is to be used when we need to find the min sell price for a new buy order
@@ -82,18 +82,18 @@ contract Heap {
     }
 
     function bubbleDown(uint256 currentIndex) private {
-        while (Math.mul(currentIndex, 2) < Math.sub(_orderbook.length, 1)) {
+        while (currentIndex.mul(2) < _orderbook.length.sub(1)) {
             // get the current index of the children
-            uint256 j = Math.add(Math.mul(currentIndex, 2), 1);
-
+            // uint256 j = Math.add(Math.mul(currentIndex, 2), 1);
+            uint j = currentIndex.mul(2).add(1);
             // left child value
             uint256 leftChild = _orderbook[j];
             // right child value
-            uint256 rightChild = _orderbook[Math.add(j, 1)];
+            uint256 rightChild = _orderbook[j.add(1)];
 
             // Compare the left and right child. if the rightChild is greater, then point j to it's index
             if (leftChild < rightChild) {
-                j = Math.add(j, 1);
+                j = j.add(1);
             }
 
             // compare the current parent value with the highest child, if the parent is greater, we're done
@@ -125,15 +125,11 @@ contract Heap {
     // there is ceil(n/2) leaf nodes.
 
     function getMin() public view returns (uint256 minElm, uint256 minIdx) {
-        uint lastIndex = Math.sub(_orderbook.length, 1);
-        uint minimumElement = _orderbook[Math.div(lastIndex, 2, false)];
-        uint minIndex = Math.div(lastIndex, 2, false);
+        uint lastIndex = _orderbook.length.sub(1);
+        uint minimumElement = _orderbook[lastIndex.div(2)];
+        uint minIndex = lastIndex.div(lastIndex);
 
-        for (
-            uint i = Math.div(lastIndex, 2, false);
-            i < _orderbook.length;
-            ++i
-        ) {
+        for (uint i = lastIndex.div(lastIndex); i < _orderbook.length; ++i) {
             minimumElement = Math.min(minimumElement, _orderbook[i]);
             if (minimumElement == _orderbook[i]) {
                 minIndex = i;

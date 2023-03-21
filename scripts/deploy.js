@@ -12,7 +12,7 @@ async function main() {
 
 	await heap.deployed();
 
-	console.log(`Heap deployed to ${lock.address}`);
+	console.log(`Heap deployed to ${heap.address}`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
