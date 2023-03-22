@@ -75,6 +75,58 @@ describe("insertion", function () {
 	});
 });
 
+describe("getMax", function () {
+	it("on inserting 10 nodes", async () => {
+		const { heap, insertNodes } = await loadFixture(deployHeapFixture);
+		await insertNodes(10);
+		const arr = await heap.getOrderbook();
+		const max = parseInt(await heap.getMax());
+		expect(max).eq(Math.max(...arr));
+	});
+
+	it("on inserting 100 nodes", async () => {
+		const { heap, insertNodes } = await loadFixture(deployHeapFixture);
+		await insertNodes(100);
+		const arr = await heap.getOrderbook();
+		const max = parseInt(await heap.getMax());
+		expect(max).eq(Math.max(...arr));
+	});
+
+	it("on inserting 1000 nodes", async () => {
+		const { heap, insertNodes } = await loadFixture(deployHeapFixture);
+		await insertNodes(1000);
+		const arr = await heap.getOrderbook();
+		const max = parseInt(await heap.getMax());
+		expect(max).eq(Math.max(...arr));
+	});
+});
+
+describe("getMin", function () {
+	it("on inserting 10 nodes", async () => {
+		const { heap, insertNodes } = await loadFixture(deployHeapFixture);
+		await insertNodes(10);
+		const arr = await heap.getOrderbook();
+		const min = parseInt(await heap.getMin());
+		expect(min).eq(Math.min(...arr));
+	});
+
+	it("on inserting 100 nodes", async () => {
+		const { heap, insertNodes } = await loadFixture(deployHeapFixture);
+		await insertNodes(100);
+		const arr = await heap.getOrderbook();
+		const min = parseInt(await heap.getMin());
+		expect(min).eq(Math.min(...arr));
+	});
+
+	it("on inserting 1000 nodes", async () => {
+		const { heap, insertNodes } = await loadFixture(deployHeapFixture);
+		await insertNodes(1000);
+		const arr = await heap.getOrderbook();
+		const min = parseInt(await heap.getMin());
+		expect(min).eq(Math.min(...arr));
+	});
+});
+
 describe("removeMax", function () {
 	it("on inserting 10 nodes", async () => {
 		const { heap, isMaxHeap, insertNodes } = await loadFixture(

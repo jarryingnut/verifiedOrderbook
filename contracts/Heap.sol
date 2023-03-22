@@ -18,7 +18,6 @@ contract Heap {
     //= [30, 20, 15, 8, 10, 3, 4];
 
     // Inserts adds in a value to our heap.
-    //_value is price in the orderbook, _ref is order reference
     function insert(uint256 _value) public {
         // Add the value to the end of our array
         _orderbook.push(_value);
