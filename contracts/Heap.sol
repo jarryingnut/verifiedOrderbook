@@ -10,7 +10,12 @@ import "hardhat/console.sol";
 contract Heap {
     using SafeMath for uint256;
 
-    uint[] public _orderbook = [30, 20, 15, 8, 10, 3, 4];
+    uint[] public _orderbook;
+    event removeMaxEvent(uint);
+    event removeMinEvent(uint);
+    event getMinEvent(uint);
+
+    //= [30, 20, 15, 8, 10, 3, 4];
 
     // Inserts adds in a value to our heap.
     //_value is price in the orderbook, _ref is order reference
@@ -58,6 +63,7 @@ contract Heap {
         bubbleDown(currentIndex);
 
         // finally, return the top of the heap
+        emit removeMaxEvent(toReturn);
         return toReturn;
     }
 
@@ -75,9 +81,22 @@ contract Heap {
     // This function is to be used when we need to find the min sell price for a new buy order
     function removeMin() public returns (uint256) {
         require(_orderbook.length > 0, "Orderbook is not initialized");
-        (uint minElm, uint minIdx) = getMin();
-        uint256 toReturn = minElm;
-        deleteOrder(minIdx);
+        //(uint minElm, uint minIdx) = getMin();
+        uint lastIndex = _orderbook.length.sub(1);
+        uint minimumElement = _orderbook[lastIndex.div(2)];
+        uint minIndex = lastIndex.div(lastIndex);
+
+        for (uint i = lastIndex.div(lastIndex); i < _orderbook.length; ++i) {
+            minimumElement = Math.min(minimumElement, _orderbook[i]);
+            if (minimumElement == _orderbook[i]) {
+                minIndex = i;
+            }
+        }
+
+        uint256 toReturn = minimumElement;
+        deleteOrder(minIndex);
+
+        emit removeMinEvent(toReturn);
         return toReturn;
     }
 
@@ -119,12 +138,7 @@ contract Heap {
         return _orderbook[0];
     }
 
-    // The max heap property requires that the parent node be greater than its child node.
-    // Due to this, we can conclude that a non-leaf node cannot be the minimum element as its child node has a lower value.
-    // So we can narrow down our search space to only leaf nodes. In a max heap having n elements,
-    // there is ceil(n/2) leaf nodes.
-
-    function getMin() public view returns (uint256 minElm, uint256 minIdx) {
+    function getMin() public view returns (uint256 minElm) {
         uint lastIndex = _orderbook.length.sub(1);
         uint minimumElement = _orderbook[lastIndex.div(2)];
         uint minIndex = lastIndex.div(lastIndex);
@@ -135,7 +149,6 @@ contract Heap {
                 minIndex = i;
             }
         }
-
-        return (minimumElement, minIndex);
+        return minimumElement;
     }
 }
